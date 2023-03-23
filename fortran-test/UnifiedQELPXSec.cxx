@@ -18,7 +18,8 @@
 #include "Math/IFunction.h"
 #include "Math/Integrator.h"
 
-#include "/genie/app/users/nsteinbe/FortranGENIE/Generator/fortran-test/UnifiedQELPXSec.h"
+/*#include "/genie/app/users/nsteinbe/FortranGENIE/Generator/fortran-test/UnifiedQELPXSec.h"*/
+#include "UnifiedQELPXSec.h"
 #include "Physics/XSectionIntegration/XSecIntegratorI.h"
 #include "Physics/QuasiElastic/XSection/QELFormFactors.h"
 #include "Physics/QuasiElastic/XSection/QELFormFactorsModelI.h"
