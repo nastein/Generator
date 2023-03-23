@@ -8,7 +8,7 @@ Author:
       Julia Tena Vidal <jtenavidal \st tauex.tau.ac.il>
       Tel Aviv University
 Copyright:
-   Copyright (c) 2003-2023, The GENIE Collaboration
+   Copyright (c) 2003-2022, The GENIE Collaboration
    For the full text of the license visit http://copyright.genie-mc.org
 """
 import os, optparse, glob, tarfile
@@ -170,7 +170,7 @@ while loop_i < loop_end + 1:
         if opts.MotherDir !='' : 
             vNMotherDir = opts.MotherDir+'/'+version+'-'+opts.PROD+'_'+opts.CYCLE+'-xsec_vN/'
 
-        command_dict.update( group.GroupSplineCommands( True,vNdir,vNMotherDir,opts.TUNE,version,opts.CONF,opts.GRID,opts.GROUP,opts.ARCH,opts.PROD,opts.CYCLE,opts.SOFTW,opts.GENIE,grid_setup,genie_setup,opts.JOBSTD,False, False, opts.GROUPJOBLIFE,opts.BRANCH,opts.GIT_LOCATION ) )
+        command_dict.update( group.GroupSplineCommands( True,vNdir,vNMotherDir,opts.TUNE,opts.vNList,version,opts.CONF,opts.GRID,opts.GROUP,opts.ARCH,opts.PROD,opts.CYCLE,opts.SOFTW,opts.GENIE,grid_setup,genie_setup,opts.JOBSTD,False, False, opts.GROUPJOBLIFE,opts.BRANCH,opts.GIT_LOCATION ) )
         total_time += int(opts.GROUPJOBLIFE)
  
     if loop_i == 2 : 
@@ -184,7 +184,7 @@ while loop_i < loop_end + 1:
         if opts.MotherDir !='' : 
             vAMotherDir = opts.MotherDir+'/'+version+'-'+opts.PROD+'_'+opts.CYCLE+'-xsec_vA/'
 
-        command_dict.update( group.GroupSplineCommands( False,vAdir,vAMotherDir,opts.TUNE,version,opts.CONF,opts.GRID,opts.GROUP,opts.ARCH,opts.PROD,opts.CYCLE,opts.SOFTW,opts.GENIE,grid_setup,genie_setup,opts.JOBSTD,False, False,opts.GROUPJOBLIFE,opts.BRANCH,opts.GIT_LOCATION ) )
+        command_dict.update( group.GroupSplineCommands( False,vAdir,vAMotherDir,opts.TUNE,opts.vAList,version,opts.CONF,opts.GRID,opts.GROUP,opts.ARCH,opts.PROD,opts.CYCLE,opts.SOFTW,opts.GENIE,grid_setup,genie_setup,opts.JOBSTD,False, False,opts.GROUPJOBLIFE,opts.BRANCH,opts.GIT_LOCATION ) )
         total_time += int(opts.GROUPJOBLIFE) 
  
     loop_i += 1 

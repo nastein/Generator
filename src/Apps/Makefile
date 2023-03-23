@@ -13,10 +13,11 @@ MAKEFILE = Makefile
 include $(GENIE)/src/make/Make.include
 
 GENIE_LIBS  = $(shell $(GENIE)/src/scripts/setup/genie-config --libs)
+EXTRA_LIBS = -L$(GENIE)/fortran-test -lFortranWrapper
 
 # Mac OS X -bind_at_load means we must list the low level libraries
 # first, and each stage must fully resolved before the next library
-LIBRARIES  := $(LIBRARIES) $(GENIE_LIBS)
+LIBRARIES  := $(LIBRARIES) $(GENIE_LIBS) $(EXTRA_LIBS)
 #LIBRARIES  := $(LIBRARIES) $(CERN_LIBRARIES) $(GENIE_LIBS)
 
 TGT_BASE =  gevgen             \

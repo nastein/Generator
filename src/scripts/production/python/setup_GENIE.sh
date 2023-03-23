@@ -80,3 +80,8 @@ fi
 #--with-boost-lib=${BOOST_FQ_DIR}/lib
 
 make
+cd $GENIE/fortran-test
+make -j4
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GENIE/fortran-test/
+cd $GENIE
+make 
