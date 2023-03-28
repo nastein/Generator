@@ -79,9 +79,9 @@ fi
 #--with-boost-inc=${BOOST_FQ_DIR}/include \
 #--with-boost-lib=${BOOST_FQ_DIR}/lib
 
-make
+make -j4
 cd $GENIE/fortran-test
 make -j4
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GENIE/fortran-test/
 cd $GENIE
-make 
+make -j4
