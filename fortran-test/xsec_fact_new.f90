@@ -67,8 +67,7 @@
 
       !...Spin average gives a factor of 1/2 to the nuclear response tensor 
       resp = resp*0.5d0
-      !..Multiply by 1/mN^2 so that we are in same conventions 
-      !resp = resp/xm/xm
+      
       call shift(resp)
 
       inter = TRANSPOSE(resp)

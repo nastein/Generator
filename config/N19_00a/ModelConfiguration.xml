@@ -23,10 +23,10 @@
   This default nuclear model will also be used for Pauli blocking kF lookups -->
   <param type="alg"  name="NuclearModel"> genie::FGMBodekRitchie/Default </param>
 
-  <!-- For 12C and 56Fe, use the spectral function -->
+  <!-- For 12C, 16O, and 56Fe, use the spectral function -->
   <param type="alg" name="NuclearModel@Pdg=1000060120"> genie::SpectralFunc/Default </param>
   <param type="alg" name="NuclearModel@Pdg=1000260560"> genie::SpectralFunc/Default </param>
-
+  <param type="alg" name="NuclearModel@Pdg=1000080160"> genie::SpectralFunc/Default </param>
  <!--
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Intranuclear rescattering

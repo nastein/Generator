@@ -13,13 +13,13 @@ GENIE_LIBS += -L${LHAPDF_LIB} -lLHAPDF
 #	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
 #	  -O3 -o $@ $^ -lgfortran
 
-#testSpl_cc: testSpl_cc.o libFortranWrapper.so
-#	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
-#          -O3 -o $@ $^ -lgfortran
-
-testSpl:: testSpl.o libFortranWrapper.so
+testSpl_cc: testSpl_cc.o libFortranWrapper.so
 	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
           -O3 -o $@ $^ -lgfortran
+
+#testSpl:: testSpl.o libFortranWrapper.so
+#	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
+#          -O3 -o $@ $^ -lgfortran
 
 #MomDist1D:: MomDist1D.o libFortranWrapper.so
 #	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
