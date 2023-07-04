@@ -18,7 +18,6 @@
 #include "Math/IFunction.h"
 #include "Math/Integrator.h"
 
-/*#include "/genie/app/users/nsteinbe/FortranGENIE/Generator/fortran-test/UnifiedQELPXSec.h"*/
 #include "UnifiedQELPXSec.h"
 #include "Physics/XSectionIntegration/XSecIntegratorI.h"
 #include "Physics/QuasiElastic/XSection/QELFormFactors.h"
@@ -146,11 +145,8 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
 
   double Q2min = genie::controls::kMinQ2Limit; // CC/NC limit
   if( interaction->ProcInfo().IsEM() ) Q2min = genie::utils::kinematics::electromagnetic::kMinQ2Limit; // EM limit
-  // For e4v put in user defined Q2 limits
-  //Q2min = 0.4; // 1 GeV (0.1), 2 GeV (0.4), 4 GeV (0.8)
   // Make sure Q2 is physical
   if ( Q2 < Q2min ) {
-   // LOG("UnifiedQELPXSec", pWARN) << "Q2 <= 0, returning xsec = 0";
     return 0.;
   }
 

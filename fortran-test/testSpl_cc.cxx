@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
   double Ev = atof(argv[1]); // GeV
   int target_pdg = 1000060120; // 12C
-  int probe_pdg = 14; // nu_e
+  int probe_pdg = 14; // nu_mu
 
   double proton_xsec = 0.;
   double neutron_xsec = 0.;

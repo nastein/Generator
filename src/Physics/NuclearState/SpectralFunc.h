@@ -62,14 +62,17 @@ public:
  protected:
   void       LoadConfig             (void);
   TGraph2D*  Convert2Graph          (TNtupleD& data) const;
-  TH2D* LoadSFDataFile( const std::string& full_file_name, int targetZ ) const;
+  TH2D* LoadSFDataFile( const std::string& full_file_name, int targetN) const;
 
   /// The path to the folder containing the spectral function data files
   std::string fDataPath;
+  std::string fDataPathProton;
+  std::string fDataPathNeutron;
 
-  /// Map storing cached spectral functions. Keys are nuclear PDG codes,
+  /// Map storing cached spectral functions. Keys are pair 
+  /// <isospin 1/-1,nuclear PDG codes>,
   /// values are 2D histograms representing the probability distribution
-  mutable std::map<int, TH2D*> fSpectralFunctionMap;
+  mutable std::map<std::pair<int,int>, TH2D*> fSpectralFunctionMap;
 
   /// The number of nucleon momentum bins to use when making spectral function
   /// histograms

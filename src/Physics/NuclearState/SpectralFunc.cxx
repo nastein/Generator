@@ -62,9 +62,9 @@ SpectralFunc::SpectralFunc(string config) :
 SpectralFunc::~SpectralFunc()
 {
   // Delete the TH2D objects from the spectral function map
-  std::map<int, TH2D*>::iterator begin = fSpectralFunctionMap.begin();
-  std::map<int, TH2D*>::iterator end = fSpectralFunctionMap.end();
-  for (std::map<int, TH2D*>::iterator iter = begin; iter != end; ++iter) {
+  std::map<std::pair<int,int>, TH2D*>::iterator begin = fSpectralFunctionMap.begin();
+  std::map<std::pair<int,int>, TH2D*>::iterator end = fSpectralFunctionMap.end();
+  for (std::map<std::pair<int,int>, TH2D*>::iterator iter = begin; iter != end; ++iter) {
     TH2D* hist = iter->second;
     if ( hist ) delete hist;
   }
@@ -202,44 +202,54 @@ TH2D* SpectralFunc::SelectSpectralFunction(const Target& t) const
 {
   // First check whether we've already built the requested spectral function
   int target_pdg = t.Pdg();
-  std::map<int, TH2D*>::iterator my_iter = fSpectralFunctionMap.find( target_pdg );
+  int hitnuc_pdg = t.HitNucPdg();
+  
+  std::map<std::pair<int,int>, TH2D*>::iterator my_iter = fSpectralFunctionMap.find( std::make_pair( hitnuc_pdg,target_pdg ) );
   if ( my_iter != fSpectralFunctionMap.end() ) return my_iter->second;
 
   // If not, attempt to build it
   std::string target_pdg_string = replace_with_std_to_string( target_pdg );
-  RgKey sf_key( "SpectFuncTable@Pdg=" + target_pdg_string );
+  std::string hitnuc_pdg_string = replace_with_std_to_string( hitnuc_pdg );
+
+  RgKey sf_key( "SpectFuncTable@Pdg=" + target_pdg_string + "_" + hitnuc_pdg_string );
   std::string data_filename;
   this->GetParamDef( sf_key, data_filename, std::string() );
 
   if ( data_filename.empty() ) {
     LOG("SpectralFunc", pERROR) << "** The spectral function for target "
-      << target_pdg << " isn't available";
+      << target_pdg << " and hit nuc PDG " << hitnuc_pdg << " isn't available";
     std::exit( 1 );
   }
 
   // Prepend the data path to the file name
   data_filename = fDataPath + data_filename;
 
-  TH2D* sf_hist = this->LoadSFDataFile( data_filename, t.Z() );
+  // Decide if we want the spectral function for protons or neutrons
+  int targetN = 0;
+  if( hitnuc_pdg == 2212 ) targetN = t.Z();
+  if( hitnuc_pdg == 2112 ) targetN = t.N();
+   
+
+  TH2D* sf_hist = this->LoadSFDataFile( data_filename, targetN );
 
   LOG("SpectralFunc", pNOTICE) << "Loaded spectral function data"
-    " for target with PDG code " << target_pdg << " from the file "
-    << data_filename;
+    " for target with PDG code " << target_pdg << " and hit nuc PDG code " << hitnuc_pdg 
+	<< "from the file " << data_filename;
 
-  sf_hist->SetName( ("sf_" + target_pdg_string).c_str() );
+  sf_hist->SetName( ("sf_" + target_pdg_string + "_" + hitnuc_pdg_string).c_str() );
 
   // Set the directory to NULL so that this histogram is never auto-deleted
   // (the genie::SpectralFunc object will take ownership)
   sf_hist->SetDirectory( NULL );
 
   // Store the new spectral function histogram for easy retrieval later
-  fSpectralFunctionMap[ target_pdg ] = sf_hist;
+  fSpectralFunctionMap[ std::make_pair( hitnuc_pdg,target_pdg ) ] = sf_hist;
 
   return sf_hist;
 }
 //____________________________________________________________________________
 TH2D* SpectralFunc::LoadSFDataFile(const std::string& full_file_name,
-  int targetZ ) const
+  int targetN) const
 {
   int num_E_bins, num_p_bins;
   double p_min, p_max, E_min, E_max;
@@ -296,9 +306,9 @@ TH2D* SpectralFunc::LoadSFDataFile(const std::string& full_file_name,
       // Convert from MeV^(-4) to GeV^(-4)
       prob_density *= std::pow( genie::units::MeV, -4 );
 
-      // Remove the normalization factor of Z from the values tabulated in the
-      // file
-      prob_density /= targetZ;
+      // Remove the normalization factor of N (number of nucleons) 
+      // from the values tabulated in the file
+      prob_density /= targetN;
 
       // Convert bin contents from probability density to probability
       // mass for easier sampling
