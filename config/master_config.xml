@@ -129,6 +129,7 @@
 
    <!--  ****** CONFIGURATION FORM FACTOR and STRUCTURE FUNCTION ALGORITHMS ****** -->
    <config alg="genie::DipoleELFormFactorsModel">                DipoleELFormFactorsModel.xml                </config>
+   <config alg="genie::KellyELFormFactorsModel">                 KellyELFormFactorsModel.xml                 </config>
    <config alg="genie::BBA03ELFormFactorsModel">                 BBA03ELFormFactorsModel.xml                 </config>
    <config alg="genie::BBA05ELFormFactorsModel">                 BBA05ELFormFactorsModel.xml                 </config>
    <config alg="genie::BBA07ELFormFactorsModel">                 BBA07ELFormFactorsModel.xml                 </config>
