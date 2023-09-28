@@ -13,6 +13,7 @@
 #pragma link C++ class genie::BBA05ELFormFactorsModel;
 #pragma link C++ class genie::BBA07ELFormFactorsModel;
 #pragma link C++ class genie::DipoleELFormFactorsModel;
+#pragma link C++ class genie::KellyELFormFactorsModel;
 #pragma link C++ class genie::TransverseEnhancementFFModel;
 
 #pragma link C++ class genie::AhrensNCELPXSec;

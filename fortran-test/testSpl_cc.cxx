@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   genie::utils::app_init::RandGen( strtol(argv[2], NULL, 0) );
 
   double Ev = atof(argv[1]); // GeV
-  int target_pdg = 1000060120; // 12C
+  int target_pdg = 1000180400; // 40Ar
   int probe_pdg = 14; // nu_mu
 
   double proton_xsec = 0.;

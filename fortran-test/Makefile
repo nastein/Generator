@@ -9,28 +9,16 @@ GENIE_LIBS += -L${LHAPDF_LIB} -lLHAPDF
 
 # When including the Fortran code, you will likely need to link the executable
 # to -lgfortran as well
-#test_xsec: test_xsec.o libFortranWrapper.so
-#	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
-#	  -O3 -o $@ $^ -lgfortran
 
-#testSpl_cc: testSpl_cc.o libFortranWrapper.so
-#	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
-#          -O3 -o $@ $^ -lgfortran
-
-testSpl:: testSpl.o libFortranWrapper.so
+testSpl_cc: testSpl_cc.o libFortranWrapper.so
 	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
           -O3 -o $@ $^ -lgfortran
 
-#MomDist1D:: MomDist1D.o libFortranWrapper.so
+#testSpl_SuSAv2:: testSpl_SuSAv2.o libFortranWrapper.so
 #	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
 #          -O3 -o $@ $^ -lgfortran
 
-#test_tensor: test_tensor.o libFortranWrapper.so
-#       $(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -L. -lFortranWrapper \
-#       #          -O3 -o $@ $^ -lgfortran
-
-
-libFortranWrapper.so: UnifiedQELPXSec.o root_dictionary.o currents_opt_v1.o xsec_fact_new.o diracmatrices.o
+libFortranWrapper.so: UnifiedQELPXSec.o root_dictionary.o onebody_currents_sf.o onebody_hadron_tensor_sf.o diracmatrices.o
 	$(CXX) $(ROOT_LIBS) $(GENIE_LIBS) -O3 --shared -o $@ $^ -lgfortran
 
 %.o: %.cxx
@@ -50,4 +38,4 @@ root_dictionary.o:
 .PHONY: clean
 
 clean:
-	$(RM) *.o test1 test_xsec libFortranWrapper.so root_dictionary_rdict.pcm
+	$(RM) *.o testSpl_cc testSpl testSpl_SuSAv2 libFortranWrapper.so root_dictionary_rdict.pcm

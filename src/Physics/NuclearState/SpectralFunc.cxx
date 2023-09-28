@@ -21,6 +21,8 @@
 #include "TGraph2D.h"
 #include "TH2D.h"
 #include "TNtupleD.h"
+#include "TFile.h"
+#include "TCanvas.h"
 #include "TRandom.h"
 #include "TSystem.h"
 
@@ -234,7 +236,7 @@ TH2D* SpectralFunc::SelectSpectralFunction(const Target& t) const
 
   LOG("SpectralFunc", pNOTICE) << "Loaded spectral function data"
     " for target with PDG code " << target_pdg << " and hit nuc PDG code " << hitnuc_pdg 
-	<< "from the file " << data_filename;
+	<< " from the file " << data_filename;
 
   sf_hist->SetName( ("sf_" + target_pdg_string + "_" + hitnuc_pdg_string).c_str() );
 
@@ -331,6 +333,14 @@ TH2D* SpectralFunc::LoadSFDataFile(const std::string& full_file_name,
         << E_bin_width;
     }
   }
+
+  // We can write the SpectralFunction to a ROOT TH2D
+  /*
+  TFile *sf_file = new TFile("SF.root", "RECREATE");
+  sf_hist->Write();
+  sf_file->Close();
+  delete sf_file;
+  */
 
   return sf_hist;
 }

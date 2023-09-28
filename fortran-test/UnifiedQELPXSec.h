@@ -60,8 +60,7 @@ public:
 
 private:
   void LoadConfig (void);
-  double FreeNucXSec(const Interaction* interaction, KinePhaseSpace_t kps) const;
-
+  
   const QELFormFactorsModelI* fCCFormFactorsModel;
   const QELFormFactorsModelI* fNCFormFactorsModel;
   const QELFormFactorsModelI* fEMFormFactorsModel;
@@ -72,6 +71,7 @@ private:
   const XSecIntegratorI* fXSecIntegrator;
   double fCos8c2; ///< cos^2(cabibbo angle)
   double fXSecScale; ///< external xsec scaling factor
+  bool fDoPauliBlocking;
 };
 
 } // genie namespace

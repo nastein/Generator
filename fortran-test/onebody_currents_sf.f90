@@ -1,4 +1,4 @@
-module dirac_matrices
+module onebody_currents_sf
     implicit none
     integer*4, private, save :: i_fl
     complex*16, private, parameter :: czero = (0.0d0,0.0d0)
@@ -11,9 +11,9 @@ module dirac_matrices
             &   ubarp1(2,4),ubarpp1(2,4)
     complex*16, private, save :: gamma_mu(4,4,5),g_munu(4,4),sigma_munu(4,4,4,4)
     complex*16, private, save :: q_sl(4,4)
-    real*8, private, save ::  p1(4),pp1(4),q(4)
+    real*8, private, save ::  p1(4),pp1(4),qt(4),w
     complex*16, private, save :: J_1(4,4,4)
-    real*8, private,save :: xmn
+    real*8, public, protected :: xmn
 contains
 
 subroutine dirac_matrices_in(xmn_in)
@@ -95,12 +95,13 @@ subroutine define_spinors()
     return
 end subroutine
 
-subroutine current_init(p1_in,pp1_in,q_in)
+subroutine current_init(p1_in,pp1_in,qt_in,w_in)
     implicit none
-    real*8 ::  p1_in(4),pp1_in(4),q_in(4)
+    real*8 ::  p1_in(4),pp1_in(4),qt_in(4),w_in
     p1=p1_in
     pp1=pp1_in
-    q=q_in
+    qt=qt_in
+    w=w_in
     return
 end subroutine
 
@@ -111,24 +112,31 @@ subroutine det_Ja(f1v,f2v,ffa,ffp)
   implicit none
   integer*4 :: mu,nu
   real*8 :: f1v,f2v,ffa,ffp
+  complex*16 :: J_1_V(4,4,4), J_1_A(4,4,4)
   
   do mu=1,4
-     J_1(:,:,mu)=czero
+     J_1_V(:,:,mu)=czero
+     J_1_A(:,:,mu)=czero
      do nu=1,4
-        J_1(:,:,mu)=J_1(:,:,mu)+ci*f2v*sigma_munu(:,:,mu,nu)&
-             &     *g_munu(nu,nu)*q(nu)/2.0d0/xmn
+        J_1_V(:,:,mu)=J_1_V(:,:,mu)+ci*f2v*sigma_munu(:,:,mu,nu)&
+             &     *g_munu(nu,nu)*qt(nu)/2.0d0/xmn
      enddo
-     J_1(:,:,mu)=J_1(:,:,mu)+f1v*gamma_mu(:,:,mu)
+     J_1_V(:,:,mu)=J_1_V(:,:,mu)+f1v*gamma_mu(:,:,mu)
 
      !Add axial parts of currents (comes with a minus sign in ffa, b/c current
      !is of the form V - A)
-     J_1(:,:,mu)=J_1(:,:,mu)+ffa*matmul(gamma_mu(:,:,mu),gamma_mu(:,:,5))
+     J_1_A(:,:,mu)=J_1_A(:,:,mu)+ffa*matmul(gamma_mu(:,:,mu),gamma_mu(:,:,5))
 
      !Add pseudoscalar piece
-     J_1(:,:,mu)=J_1(:,:,mu)+ffp*gamma_mu(:,:,5)*q(mu)/xmn
+     J_1_A(:,:,mu)=J_1_A(:,:,mu)+ffp*gamma_mu(:,:,5)*qt(mu)/xmn
 
   enddo
   
+  J_1_V(:,:,4) = (w/qt(4))*J_1_V(:,:,1)
+
+  J_1 = J_1_V + J_1_A
+
+
 end subroutine det_Ja
 
 
@@ -153,9 +161,7 @@ subroutine det_res1b(res)
       do f1=1,2
          do i=1,4
           do j=1,4
-            !if((i.eq.1.and.j.eq.3).or.(i.eq.2.and.j.eq.1)) then
               res(i,j)=res(i,j)+J_mu_dag(f1,i1,i)*J_mu(f1,i1,j)
-            !endif
           enddo
          enddo
       enddo
@@ -165,7 +171,7 @@ subroutine det_res1b(res)
 
   return
 end subroutine det_res1b
-end module dirac_matrices
+end module onebody_currents_sf
 
 
 

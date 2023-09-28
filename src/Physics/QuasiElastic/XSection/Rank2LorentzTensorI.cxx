@@ -63,6 +63,9 @@ double genie::Rank2LorentzTensorI::LeviCivitaProduct(genie::TensorIndex_t mu,
   return result;
 }
 
+
+// Slight convention change with the fortran wrapper SF model, need different
+// convention for the levi civita tensor
 double genie::Rank2LorentzTensorI::LeviCivitaProductSF(genie::TensorIndex_t mu,
   genie::TensorIndex_t nu, const TLorentzVector& p1, const TLorentzVector& p2)
   const
@@ -102,9 +105,8 @@ double genie::Rank2LorentzTensorI::LeviCivitaProductSF(genie::TensorIndex_t mu,
   if ( !(set_alpha && set_beta) ) {
     // TODO: ERROR!
   }
-  //std::cout << "mu_nu_alpha_beta = " << mu << " " << nu << " " << alpha << " " << beta << "\n"; 
+  
   int levi_civita_sign = (mu - nu) * (mu - alpha) * (mu - beta) * (nu - alpha) * (nu - beta) * (alpha - beta) / 12;
-  //std::cout << "Levi(" << mu << "" << nu << "" << alpha  << "" << beta << ") = " << levi_civita_sign << "\n"; 
   double result = levi_civita_sign * (p1_con[alpha]*p2_con[beta] - p1_con[beta]*p2_con[alpha]);
 
   return result;

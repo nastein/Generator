@@ -415,7 +415,7 @@ double QELEventGenerator::ComputeMaxXSec(const Interaction * in) const
     // The computed max differential cross section does not need to be the exact
     // maximum. The number used in the rejection method will be scaled up by a
     // safety factor. But it needs to be fast.
-    LOG("QELEvent", pINFO) << "Computing maximum cross section to throw against";
+   LOG("QELEvent", pINFO) << "Computing maximum cross section to throw against";
 
     double xsec_max = -1;
     double dummy_Eb = 0.;

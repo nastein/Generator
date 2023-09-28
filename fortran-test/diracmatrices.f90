@@ -1,5 +1,5 @@
 subroutine diracmatrices(xmn_in)
-	use dirac_matrices
+	use onebody_currents_sf
 	IMPLICIT NONE
 	real*8 :: xmn_in
 	
