@@ -4,7 +4,8 @@
  For the full text of the license visit http://copyright.genie-mc.org
  or see $GENIE/LICENSE
 
- Author: Steven Gardiner <gardiner \at fnal.gov>
+ Author: Noah Steinberg <nsteinbe \at fnal.gov>
+         Steven Gardiner <gardiner \at fnal.gov>
          Fermi National Acclerator Laboratory
 
  For the class documentation see the corresponding header file.
@@ -44,13 +45,13 @@ using namespace genie::utils;
 //____________________________________________________________________________
 extern"C"
 {
-void diracmatrices_(double *xmn_in);
+void diracmatrices_(double *, int *);
 }
 
 ////____________________________________________________________________________
 extern"C"
 {
-  void compute_hadron_tensor_(double *, double *, double *, double *,double *,double *,double *,double *,double *,double *,double *,double *,std::complex<double> [4][4]);
+  void compute_hadron_tensor_(double *, double *,double *,double *,double *,double *,double *,double *,double *,double *,std::complex<double> [4][4]);
 }
 
 //____________________________________________________________________________
@@ -128,7 +129,7 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
 
   // Let's rotate everything so that q points along z
   // This helps us implement current conservation
-  // i.e. q_0 J^0 = q_3 J^3
+  // because now this is simple: q_0 J^0 = q_3 J^3
   TVector3 neutrinoMom3 = probeP4.Vect();
   TVector3 leptonMom3 = lepP4.Vect();
   TVector3 inNucleonMom3 = p4NiOnShell.Vect();
@@ -238,24 +239,24 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   // works for NC and EM as well 
   double xmn = ( mNi + interaction->RecoilNucleon()->Mass() ) / 2.;
 
-  // Set up dirac matrices routine 
-  diracmatrices_(&xmn);
+  // Set up dirac matrices routine
+  // And decide if we want to conserve vector current 
+  int CC = fConserveVectorCurrent;
+  // Can't pass private members to fortran by reference
+  diracmatrices_(&xmn, &CC);
 
   // Get energy and momentum transfer values
   double q = qP4.P();
   double w = qP4.E();
   double wt = qTildeP4.E(); 
-  double xk_x, xk_y, xk_z, xp_x, xp_y, xp_z;
+  double xk_x, xk_y, xk_z;
   
   xk_x = p4NiOnShell.X();
   xk_y = p4NiOnShell.Y();
   xk_z = p4NiOnShell.Z();
-  xp_x = p4Nf.X();
-  xp_y = p4Nf.Y();
-  xp_z = p4Nf.Z();  
 
   // Compute hadron tensor 
-  compute_hadron_tensor_(&w, &wt, &xk_x, &xk_y, &xk_z, &xp_x, &xp_y, &xp_z, &f1v, &f2v, &ffa, &ffp, HadronTensor);
+  compute_hadron_tensor_(&w, &wt, &xk_x, &xk_y, &xk_z, &q, &f1v, &f2v, &ffa, &ffp, HadronTensor);
   
   // Convert to a GENIE Rank2LorentzTensor object
   ManualResponseTensor ATilde_munu(HadronTensor);
@@ -386,5 +387,7 @@ void UnifiedQELPXSec::LoadConfig(void)
   // Decide whether or not it should be used in XSec()
   GetParamDef( "DoPauliBlocking", fDoPauliBlocking, true );
   
+  // Decide whether or not we should conserve vector current
+  GetParamDef( "DoConserveVectorCurrent", fConserveVectorCurrent, 1 );
 
 }

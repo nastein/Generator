@@ -72,6 +72,7 @@ private:
   double fCos8c2; ///< cos^2(cabibbo angle)
   double fXSecScale; ///< external xsec scaling factor
   bool fDoPauliBlocking;
+  int fConserveVectorCurrent;
 };
 
 } // genie namespace

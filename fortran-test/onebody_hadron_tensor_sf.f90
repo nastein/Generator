@@ -6,35 +6,36 @@
 ! Computes the hadronic response tensor given form factors
 ! initial and final hadron momentum, energy transfer
 ! Output is complex 4x4 resp array
-  subroutine compute_hadron_tensor(w, wt, xk_x, xk_y, xk_z, xp_x, xp_y, xp_z, ff1v, ff2v, ffa, ffp, resp)
+  subroutine compute_hadron_tensor(w, wt, xk_x, xk_y, xk_z, q, ff1v, ff2v, ffa, ffp, resp)
     use onebody_hadron_tensor_sf
     use onebody_currents_sf
     implicit none
     integer*4 :: i 
-    real*8 :: w, wt, xk, xp
+    real*8 :: w, wt, xk, xp, q
     real*8 :: ek,epf
     real*8 :: xk_x,xk_y,xk_z
-    real*8 :: xp_x,xp_y,xp_z
     real*8 :: p_4(4),pp_4(4),qt_4(4)
     real*8 :: ff1v, ff2v, ffa, ffp
     complex*16 :: resp(4,4)
 
-      
+      ! Define initial and final nucleon 4 momentum
+      ! Remember that q points along z
       xk = sqrt(xk_x**2 + xk_y**2 + xk_z**2)
-      xp = sqrt(xp_x**2 + xp_y**2 + xp_z**2)
-      ek = sqrt(xk**2+xmn**2)
+      xp = sqrt(xk_x**2 + xk_y**2 + (xk_z + q)**2)
+
+      ek = sqrt(xmn**2 + xk**2)
       epf = sqrt(xmn**2 + xp**2)
-      
-      !...define the initial and final nucleon 4-momentum
+
       p_4(1)=ek
       p_4(2)=xk_x
       p_4(3)=xk_y
       p_4(4)=xk_z
-      pp_4(1)=epf
-      pp_4(2)=xp_x
-      pp_4(3)=xp_y
-      pp_4(4)=xp_z
- 
+
+      pp_4(1) = epf
+      pp_4(2) = xk_x
+      pp_4(3) = xk_y
+      pp_4(4) = xk_z + q
+
       qt_4 = pp_4 - p_4
       qt_4(1) = wt
   

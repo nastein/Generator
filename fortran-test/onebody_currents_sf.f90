@@ -13,14 +13,18 @@ module onebody_currents_sf
     complex*16, private, save :: q_sl(4,4)
     real*8, private, save ::  p1(4),pp1(4),qt(4),w
     complex*16, private, save :: J_1(4,4,4)
+    logical, private, save :: CC
     real*8, public, protected :: xmn
 contains
 
-subroutine dirac_matrices_in(xmn_in)
+subroutine dirac_matrices_in(xmn_in, CC_in)
     implicit none
     integer*4 :: i,j
-    real*8 :: xmd_in,xmn_in,xmpi_in
+    real*8 :: xmn_in
+    logical :: CC_in
+
     xmn=xmn_in
+    CC=CC_in
     sig(:,:,:)=czero
     id(:,:)=czero
     id(1,1)=cone;id(2,2)=cone
@@ -131,8 +135,12 @@ subroutine det_Ja(f1v,f2v,ffa,ffp)
      J_1_A(:,:,mu)=J_1_A(:,:,mu)+ffp*gamma_mu(:,:,5)*qt(mu)/xmn
 
   enddo
-  
-  J_1_V(:,:,4) = (w/qt(4))*J_1_V(:,:,1)
+ 
+  ! If using current conservation (q0J0 = q3J3) 
+  ! when q points along z 
+  if (CC) then
+     J_1_V(:,:,4) = (w/qt(4))*J_1_V(:,:,1)
+  endif
 
   J_1 = J_1_V + J_1_A
 
