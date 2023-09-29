@@ -130,42 +130,9 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   // Let's rotate everything so that q points along z
   // This helps us implement current conservation
   // because now this is simple: q_0 J^0 = q_3 J^3
-  TVector3 neutrinoMom3 = probeP4.Vect();
-  TVector3 leptonMom3 = lepP4.Vect();
-  TVector3 inNucleonMom3 = p4NiOnShell.Vect();
-  TVector3 outNucleonMom3 = p4Nf.Vect();
-
-  // Find the rotation angle needed to put q3Vec along z
-  TVector3 q3Vec = neutrinoMom3 - leptonMom3; 
-  TVector3 zvec(0.0, 0.0, 1.0);
-  TVector3 rot = ( q3Vec.Cross(zvec) ).Unit(); // Vector to rotate about
-  // Angle between the z direction and q
-  double angle = zvec.Angle( q3Vec );
-
-  // Handle the edge case where q3Vec is along -z, so the
-  // cross product above vanishes
-  if ( q3Vec.Perp() == 0. && q3Vec.Z() < 0. ) {
-    rot = TVector3(0., 1., 0.);
-    angle = kPi;
-  }
-
-  // Rotate if the rotation vector is not 0
-  if ( rot.Mag() >= kASmallNum ) {
-
-    neutrinoMom3.Rotate(angle,rot);
-    probeP4.SetVect(neutrinoMom3);
-
-    leptonMom3.Rotate(angle,rot);
-    lepP4.SetVect(leptonMom3);
-
-    inNucleonMom3.Rotate(angle,rot);
-    p4NiOnShell.SetVect(inNucleonMom3);
-
-    outNucleonMom3.Rotate(angle,rot);
-    p4Nf.SetVect(outNucleonMom3);
-
-  }
-
+  std::vector<TLorentzVector> otherp4 {p4Ni, p4NiOnShell, p4Nf};
+  genie::utils::Rotate_qvec_alongZ(probeP4, lepP4, otherp4);
+  
   // Compute form factors using Q2tilde (the effective Q2 value after
   // binding energy corrections)
   TLorentzVector qP4 = probeP4 - lepP4;

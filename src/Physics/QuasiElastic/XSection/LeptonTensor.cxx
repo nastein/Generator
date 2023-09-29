@@ -4,7 +4,7 @@
 #include "Framework/Messenger/Messenger.h"
 #include "Physics/QuasiElastic/XSection/LeptonTensor.h"
 
-genie::LeptonTensor::LeptonTensor(const genie::Interaction& interaction, bool SF = false)
+genie::LeptonTensor::LeptonTensor(const genie::Interaction& interaction, bool SF)
 {
   // Make copies of the initial and final lepton 4-momenta in the lab frame
   TLorentzVector* temp_probeP4 = interaction.InitState()
@@ -25,7 +25,7 @@ genie::LeptonTensor::LeptonTensor(const genie::Interaction& interaction, bool SF
 }
 
 genie::LeptonTensor::LeptonTensor(const TLorentzVector& p4Probe,
-  const TLorentzVector& p4Lep, int probe_pdg, InteractionType_t type, bool SF = false)
+  const TLorentzVector& p4Lep, int probe_pdg, InteractionType_t type, bool SF)
 {
   fProbeP4 = p4Probe;
   fFSLepP4 = p4Lep;
