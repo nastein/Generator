@@ -5,7 +5,6 @@ module onebody_currents_sf
     complex*16, private, parameter :: cone  = (1.0d0,0.0d0)
     complex*16, private, parameter :: ci    = (0.0d0,1.0d0)
     real*8, private, parameter :: pi=acos(-1.0d0)    
-    real*8, private, save :: mqe, qval
     complex*16, private, save :: sig(3,2,2),id(2,2),id4(4,4),up(2),down(2)
     complex*16, private, save :: up1(2,4),upp1(2,4), &
             &   ubarp1(2,4),ubarpp1(2,4)
@@ -138,9 +137,9 @@ subroutine det_Ja(f1v,f2v,ffa,ffp)
  
   ! If using current conservation (q0J0 = q3J3) 
   ! when q points along z 
-  if (CC) then
-     J_1_V(:,:,4) = (w/qt(4))*J_1_V(:,:,1)
-  endif
+  !if (CC) then
+  !   J_1_V(:,:,4) = (w/qt(4))*J_1_V(:,:,1)
+  !endif
 
   J_1 = J_1_V + J_1_A
 

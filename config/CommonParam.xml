@@ -231,13 +231,13 @@ Or changing the name of this parameter set
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Value of axial form factor at Q2=0
     -->
-    <param type="double" name="QEL-FA0"> -1.2670 </param>
+    <param type="double" name="QEL-FA0"> -1.2694 </param>
 
     <!--
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Axial and vector masses for quasi-elastic scattering
     -->
-    <param type="double" name="QEL-Ma"> 0.990 </param>
+    <param type="double" name="QEL-Ma"> 1.0 </param>
     <param type="double" name="QEL-Mv"> 0.840 </param>
 
   </param_set>
@@ -263,11 +263,12 @@ Or changing the name of this parameter set
 	Elastic form factors used for QEL CC cross section calculation.
 	Options are:
 	- genie::DipoleELFormFactorsModel
+        - genie::KellyELFormFactorsModel, J.J. Kelly, Phys.Rev.C 70 (2004) 068202
 	- genie::BBA03ELFormFactorsModel, H.Budd, NuINT-02 proceedings
 	- genie::BBA05ELFormFactorsModel, R.Bradford, A.Bodek, H.Budd and J.Arrington, hep-ex/0602017
 	- genie::BBA07ELFormFactorsModel, R.Bradford, A.Bodek, H.Budd and S.Avvakumov, Euro.Phys.J.C53 (2008);[arXiv:0708.1946 [hep-ex]]
     -->
-    <param type="alg" name="ElasticFormFactorsModel"> genie::BBA07ELFormFactorsModel/Default </param>
+    <param type="alg" name="ElasticFormFactorsModel"> genie::KellyELFormFactorsModel/Default </param>
 
     <!-- Option for turning on Transverse Enhancement by Elastic Form Factor adjustment.
 	 See http://arxiv.org/abs/1405.0583 and http://arxiv.org/abs/1106.0340

@@ -129,10 +129,16 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
 
   // Let's rotate everything so that q points along z
   // This helps us implement current conservation
-  // because now this is simple: q_0 J^0 = q_3 J^3
+  // because in these coordinates: q_0 Jv^0 = q_3 Jv^3
   std::vector<TLorentzVector> otherp4 {p4Ni, p4NiOnShell, p4Nf};
   genie::utils::Rotate_qvec_alongZ(probeP4, lepP4, otherp4);
-  
+
+  // Have to manually assign "other"
+  // to the vector of rotated momenta  
+  p4Ni = otherp4[0];
+  p4NiOnShell = otherp4[1];
+  p4Nf = otherp4[2];  
+
   // Compute form factors using Q2tilde (the effective Q2 value after
   // binding energy corrections)
   TLorentzVector qP4 = probeP4 - lepP4;
@@ -143,6 +149,7 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   double Q2tilde = -1. * qTildeP4.M2();
 
   double Q2min = genie::controls::kMinQ2Limit; // CC/NC limit
+  //std::cout << Q2min << "\n";
   if( interaction->ProcInfo().IsEM() ) Q2min = genie::utils::kinematics::electromagnetic::kMinQ2Limit; // EM limit
   // Make sure Q2 is physical
   if ( Q2 < Q2min ) {
@@ -182,7 +189,6 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
 
   // Set Q2 to Q2tilde while computing form factors
   interaction->KinePtr()->SetQ2( Q2tilde );
-
   // Evaluate the form factors
   fFormFactors.Calculate( interaction );
 
@@ -190,7 +196,7 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   double f2v = fFormFactors.xiF2V();
   double ffa = fFormFactors.FA();
   double ffp = fFormFactors.Fp();
-  
+
   // Now that we've calculated them, store the true Q2 value
   interaction->KinePtr()->SetQ2( Q2 );
 
