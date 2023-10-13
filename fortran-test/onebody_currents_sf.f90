@@ -12,18 +12,15 @@ module onebody_currents_sf
     complex*16, private, save :: q_sl(4,4)
     real*8, private, save ::  p1(4),pp1(4),qt(4),w
     complex*16, private, save :: J_1(4,4,4)
-    logical, private, save :: CC
     real*8, public, protected :: xmn
 contains
 
-subroutine dirac_matrices_in(xmn_in, CC_in)
+subroutine dirac_matrices_in(xmn_in)
     implicit none
     integer*4 :: i,j
     real*8 :: xmn_in
-    logical :: CC_in
 
     xmn=xmn_in
-    CC=CC_in
     sig(:,:,:)=czero
     id(:,:)=czero
     id(1,1)=cone;id(2,2)=cone
@@ -64,8 +61,8 @@ subroutine define_spinors()
     up1=czero
     upp1=czero
 !.......initialize normalization factors
-    cp1=sqrt((p1(1)+xmn)/(2.0d0*p1(1)))
-    cpp1=sqrt((pp1(1)+xmn)/(2.0d0*pp1(1)))
+    cp1=sqrt((p1(1)+xmn)/(2.0d0))
+    cpp1=sqrt((pp1(1)+xmn)/(2.0d0))
 !.....define sigma*p
     do i=1,3
       sigp1=sigp1+sig(i,:,:)*p1(i+1)

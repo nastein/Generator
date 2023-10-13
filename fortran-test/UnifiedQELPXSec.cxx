@@ -42,16 +42,12 @@ using namespace genie::constants;
 using namespace genie::controls;
 using namespace genie::utils;
 
-//____________________________________________________________________________
-extern"C"
-{
-void diracmatrices_(double *, int *);
-}
-
 ////____________________________________________________________________________
 extern"C"
 {
-  void compute_hadron_tensor_(double *, double *,double *,double *,double *,double *,double *,double *,double *,double *,std::complex<double> [4][4]);
+  void compute_hadron_tensor_(double *,double *, double *,double *,double *,
+	double *,double *,double *,double *,double *,double *,
+	double *,double *,std::complex<double> [4][4]);
 }
 
 //____________________________________________________________________________
@@ -87,6 +83,7 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   TLorentzVector probeP4 = *temp_probeP4;
   delete temp_probeP4;
   double p_probe = probeP4.P();
+  double E_probe = probeP4.E();
 
   TLorentzVector p4Ni = target.HitNucP4();
   double mNi = target.HitNucMass(); // on-shell initial hit nucleon mass
@@ -111,7 +108,7 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
  
   // Incoming and outgoing hadron phase space factos
   // are included in hadron tensor
-  xsec *= fXSecScale / (E_lep * P_lep);
+  xsec *= fXSecScale / (E_lep * E_probe * E_NiOnShell * E_Nf) / 32. / kPi / kPi;
 
   // If we're dealing with a nuclear target, then apply Pauli blocking as
   // needed  
@@ -127,17 +124,14 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
 
   xsec *= num_active;
 
-  // Let's rotate everything so that q points along z
-  // This helps us implement current conservation
-  // because in these coordinates: q_0 Jv^0 = q_3 Jv^3
-  std::vector<TLorentzVector> otherp4 {p4Ni, p4NiOnShell, p4Nf};
-  genie::utils::Rotate_qvec_alongZ(probeP4, lepP4, otherp4);
-
-  // Have to manually assign "other"
-  // to the vector of rotated momenta  
-  p4Ni = otherp4[0];
-  p4NiOnShell = otherp4[1];
-  p4Nf = otherp4[2];  
+  // Do we need to rotate so that \vec{q} || \vec{z}?
+  if (fDoqAlongZ) {
+    std::vector<TLorentzVector> otherp4 {p4Ni, p4NiOnShell, p4Nf};
+    genie::utils::Rotate_qvec_alongZ(probeP4, lepP4, otherp4);
+    p4Ni = otherp4[0];
+    p4NiOnShell = otherp4[1];
+    p4Nf = otherp4[2];
+  }
 
   // Compute form factors using Q2tilde (the effective Q2 value after
   // binding energy corrections)
@@ -161,16 +155,16 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   double coupling_factor = 1.;
   const genie::ProcessInfo& proc_info = interaction->ProcInfo();
   if ( proc_info.IsWeakCC() ) {
-    coupling_factor = kGF2 * fCos8c2 * P_lep / (32 * kPi * kPi * p_probe);
+    coupling_factor = kGF2 * fCos8c2;
     fFormFactors.SetModel( fCCFormFactorsModel );
   }
 
   else if ( proc_info.IsWeakNC() ) {
-    coupling_factor = kGF2 * P_lep / (32 * kPi * kPi * p_probe);
+    coupling_factor = kGF2 * P_lep;
     fFormFactors.SetModel( fNCFormFactorsModel );
   }
   else if ( proc_info.IsEM() ) {
-    coupling_factor = kAem2 * E_lep/ (probeP4.E() * Q2*Q2) ;
+    coupling_factor = 32. * kPi * kPi * kAem2 / ( Q2*Q2 ) ;
     fFormFactors.SetModel( fEMFormFactorsModel );
   }
   else {
@@ -212,24 +206,21 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   // works for NC and EM as well 
   double xmn = ( mNi + interaction->RecoilNucleon()->Mass() ) / 2.;
 
-  // Set up dirac matrices routine
-  // And decide if we want to conserve vector current 
-  int CC = fConserveVectorCurrent;
-  // Can't pass private members to fortran by reference
-  diracmatrices_(&xmn, &CC);
-
   // Get energy and momentum transfer values
   double q = qP4.P();
   double w = qP4.E();
   double wt = qTildeP4.E(); 
-  double xk_x, xk_y, xk_z;
+  double xk_x, xk_y, xk_z, q_x, q_y, q_z;
   
   xk_x = p4NiOnShell.X();
   xk_y = p4NiOnShell.Y();
   xk_z = p4NiOnShell.Z();
+  q_x = qP4.X();
+  q_y = qP4.Y();
+  q_z = qP4.Z();
 
   // Compute hadron tensor 
-  compute_hadron_tensor_(&w, &wt, &xk_x, &xk_y, &xk_z, &q, &f1v, &f2v, &ffa, &ffp, HadronTensor);
+  compute_hadron_tensor_(&xmn, &w, &wt, &xk_x, &xk_y, &xk_z, &q_x, &q_y, &q_z, &f1v, &f2v, &ffa, &ffp, HadronTensor);
   
   // Convert to a GENIE Rank2LorentzTensor object
   ManualResponseTensor ATilde_munu(HadronTensor);
@@ -360,7 +351,7 @@ void UnifiedQELPXSec::LoadConfig(void)
   // Decide whether or not it should be used in XSec()
   GetParamDef( "DoPauliBlocking", fDoPauliBlocking, true );
   
-  // Decide whether or not we should conserve vector current
-  GetParamDef( "DoConserveVectorCurrent", fConserveVectorCurrent, 1 );
+  // Decide whether or not we rotate so that q is along z
+  GetParamDef( "DoRotate_qAlong_z", fDoqAlongZ, false );
 
 }

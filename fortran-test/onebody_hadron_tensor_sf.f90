@@ -1,30 +1,38 @@
   module onebody_hadron_tensor_sf
     implicit none
-    real*8, save :: e,ef,q2,p2,pf2,sina2,wf
   end module onebody_hadron_tensor_sf
 
 ! Computes the hadronic response tensor given form factors
 ! initial and final hadron momentum, energy transfer
 ! Output is complex 4x4 resp array
-  subroutine compute_hadron_tensor(w, wt, xk_x, xk_y, xk_z, q, ff1v, ff2v, ffa, ffp, resp)
+! This function expects that q is along Z!!!
+  subroutine compute_hadron_tensor(xmn_in, w, wt, xk_x, xk_y, xk_z, q_x, q_y, q_z, ff1v, ff2v, ffa, ffp, resp)
     use onebody_hadron_tensor_sf
     use onebody_currents_sf
     implicit none
     integer*4 :: i 
-    real*8 :: w, wt, xk, xp, q
+    real*8 :: w, wt, xk, xp, q_x, q_y, q_z, xmn_in
     real*8 :: ek,epf
     real*8 :: xk_x,xk_y,xk_z
     real*8 :: p_4(4),pp_4(4),qt_4(4)
     real*8 :: ff1v, ff2v, ffa, ffp
     complex*16 :: resp(4,4)
 
+      !Set up all dirac matrices
+      call dirac_matrices_in(xmn_in)
+
       ! Define initial and final nucleon 4 momentum
       ! Remember that q points along z
       xk = sqrt(xk_x**2 + xk_y**2 + xk_z**2)
-      xp = sqrt(xk_x**2 + xk_y**2 + (xk_z + q)**2)
+      xp = sqrt((xk_x+q_x)**2 + (xk_y+q_y)**2 + (xk_z + q_z)**2)
 
       ek = sqrt(xmn**2 + xk**2)
       epf = sqrt(xmn**2 + xp**2)
+
+      qt_4(1) = wt
+      qt_4(2) = q_x
+      qt_4(3) = q_y
+      qt_4(4) = q_z
 
       p_4(1)=ek
       p_4(2)=xk_x
@@ -32,13 +40,10 @@
       p_4(4)=xk_z
 
       pp_4(1) = epf
-      pp_4(2) = xk_x
-      pp_4(3) = xk_y
-      pp_4(4) = xk_z + q
+      pp_4(2) = p_4(2) + qt_4(2)
+      pp_4(3) = p_4(3) + qt_4(3)
+      pp_4(4) = p_4(4) + qt_4(4)
 
-      qt_4 = pp_4 - p_4
-      qt_4(1) = wt
-  
       call current_init(p_4,pp_4,qt_4,w)
       call define_spinors()
       call sigccc(resp,ff1v,ff2v,ffa,ffp)
@@ -81,9 +86,4 @@
 
       return
     end subroutine shift
-
-
-
-
-  
 

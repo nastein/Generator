@@ -42,7 +42,7 @@ IntegralNucleonBindingMode           alg      No
     <param type="alg"  name="PauliBlockerAlg"> genie::PauliBlocker/Default </param>
     <param type="bool" name="DoPauliBlocking"> true </param>
 
-    <param type="int" name="DoConserveVectorCurrent"> 0 </param>
+    <param type="bool" name="DoRotate_qAlong_z"> true </param>
 
     <param type="alg"  name="NCFormFactorsAlg"> genie::LwlynSmithFFNC/Default </param>
     <param type="alg"  name="EMFormFactorsAlg"> genie::LwlynSmithFFEM/Default </param>
