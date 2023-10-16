@@ -82,7 +82,6 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   TLorentzVector* temp_probeP4 = init_state.GetProbeP4( kRfLab );
   TLorentzVector probeP4 = *temp_probeP4;
   delete temp_probeP4;
-  double p_probe = probeP4.P();
   double E_probe = probeP4.E();
 
   TLorentzVector p4Ni = target.HitNucP4();
@@ -98,7 +97,6 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
 
   TLorentzVector p4Nf = kinematics.HadSystP4();
   double E_Nf = p4Nf.E();
-  double P_Nf = p4Nf.P();
   
   // in the dOmegadE' phase space, but QELEvgen phase space is
   // defined for a conversion between d3k'(Lab)->dcosthetadphi (COM frame), so we have to
@@ -207,7 +205,6 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   double xmn = ( mNi + interaction->RecoilNucleon()->Mass() ) / 2.;
 
   // Get energy and momentum transfer values
-  double q = qP4.P();
   double w = qP4.E();
   double wt = qTildeP4.E(); 
   double xk_x, xk_y, xk_z, q_x, q_y, q_z;

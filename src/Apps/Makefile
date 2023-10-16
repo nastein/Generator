@@ -13,7 +13,7 @@ MAKEFILE = Makefile
 include $(GENIE)/src/make/Make.include
 
 GENIE_LIBS  = $(shell $(GENIE)/src/scripts/setup/genie-config --libs)
-EXTRA_LIBS = -L$(GENIE)/fortran-test -lFortranWrapper
+EXTRA_LIBS = 
 
 # Mac OS X -bind_at_load means we must list the low level libraries
 # first, and each stage must fully resolved before the next library

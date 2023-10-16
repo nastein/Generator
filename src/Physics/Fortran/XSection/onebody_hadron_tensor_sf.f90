@@ -1,6 +1,6 @@
   module onebody_hadron_tensor_sf
     implicit none
-  end module onebody_hadron_tensor_sf
+  end module onebody_hadron_tensor_sf    
 
 ! Computes the hadronic response tensor given form factors
 ! initial and final hadron momentum, energy transfer
@@ -51,7 +51,6 @@
     end subroutine compute_hadron_tensor
     
     subroutine sigccc(resp,ff1v,ff2v,ffa,ffp)
-      use onebody_hadron_tensor_sf
       use onebody_currents_sf
       implicit none
       real*8 :: ff1v,ff2v,ffa,ffp
@@ -76,7 +75,6 @@
     !This module shifts the response tensor so that it is in (x,y,z,t), used by
     !TLorentzVector and GENIE convention instead of (t,x,y,z)
     subroutine shift(resp)
-      use onebody_hadron_tensor_sf
       use onebody_currents_sf
       implicit none
       complex*16 :: resp(4,4)

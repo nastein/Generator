@@ -5,5 +5,7 @@
 #pragma link off all functions;
 
 #pragma link C++ namespace genie;
-#pragma link C++ class genie::UnifiedQELPXSec+;
+
+#pragma link C++ class genie::UnifiedQELPXSec;
+
 #endif

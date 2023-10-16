@@ -13,25 +13,26 @@
 #include "Framework/ParticleData/PDGLibrary.h"
 #include "Framework/ParticleData/PDGUtils.h"
 #include "Framework/Interaction/InteractionType.h"
-#include "UnifiedQELPXSec.h"
+#include "Physics/Fortran/XSection/UnifiedQELPXSec.h"
+
 //using namespace genie;
 
 constexpr int PROTON = 2212; // proton
 constexpr int NEUTRON = 2112; // neutron
 constexpr long int rng_seed = 41285;
-int main(int argc, char *argv[]) {
+
+double testfort(double Ev, long int seed) {
 
   // Initialize GENIE with the appropriate tune
   genie::RunOpt* run_opt = genie::RunOpt::Instance();
 
   run_opt->SetTuneName( "N19_00a_00_000" );
   run_opt->BuildTune();
-  std::cout << "Random number = " << strtol(argv[2], NULL, 0) << "\n";
-  genie::utils::app_init::RandGen( strtol(argv[2], NULL, 0) );
-  
-  double Ev = atof(argv[1]); // GeV
-  int target_pdg = 1000060120; // 12C
-  int probe_pdg = 11; // electron
+  std::cout << "Random number = " << seed << "\n";
+  genie::utils::app_init::RandGen( seed );
+
+  int target_pdg = 1000060120; // 40Ar
+  int probe_pdg = 14; // nu_mu
 
   double proton_xsec = 0.;
   double neutron_xsec = 0.;
@@ -40,29 +41,26 @@ int main(int argc, char *argv[]) {
 
   const auto* xsec_model = dynamic_cast<const genie::XSecAlgorithmI*>(
     factory->GetAlgorithm("genie::UnifiedQELPXSec", "Dipole") );
-
-  genie::Interaction* interaction_p = genie::Interaction::QELEM( target_pdg, PROTON,
+  
+  //genie::Interaction* interaction_p = genie::Interaction::QELCC( target_pdg, PROTON,
+   // probe_pdg, Ev );
+  genie::Interaction* interaction_n = genie::Interaction::QELCC( target_pdg, NEUTRON,
     probe_pdg, Ev );
-  genie::Interaction* interaction_n = genie::Interaction::QELEM( target_pdg, NEUTRON,
-    probe_pdg, Ev );
 
-  proton_xsec = xsec_model->Integral( interaction_p );
+  //proton_xsec = xsec_model->Integral( interaction_p );
   neutron_xsec = xsec_model->Integral( interaction_n );
 
-  std::cout << "Proton Final result: E = "<< Ev  << ", xsec = " << proton_xsec << " GeV^(-2)\n";
-  std::cout << "Neutron Final result: E = "<< Ev  << ", xsec = " << neutron_xsec<< " GeV^(-2)\n";
- 
-  double xsec = proton_xsec + neutron_xsec;
- 
-  //Convert from GeV^(-2) to nb
-  xsec /= genie::units::nanobarn;
+  //std::cout << "Proton Final result: E = "<< Ev  << ", xsec = " << proton_xsec << " GeV^(-2)\n";
+  std::cout << "Neutron Final result: E = "<< Ev  << ", xsec = " << neutron_xsec << " GeV^(-2)\n";
+  // Convert from GeV^(-2) to nb
+  neutron_xsec /= genie::units::nanobarn;
 
-  std::cout << xsec << " nb\n";
+  std::cout << neutron_xsec << " nb = " << "\n";
 
   // Convert from nb to 10^(-38) cm^2
-  xsec *=1e5;
+  neutron_xsec *=1e5;
 
-  std::cout << xsec << " 1e-38 cm^(2)\n";
+  std::cout << neutron_xsec << " 1e-38 cm^(2)\n";
 
   return 0;
 }
