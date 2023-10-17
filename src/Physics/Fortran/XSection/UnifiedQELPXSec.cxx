@@ -1,6 +1,6 @@
 //____________________________________________________________________________
 /*
- Copyright (c) 2003-2019, The GENIE Collaboration
+ Copyright (c) 2003-2023, The GENIE Collaboration
  For the full text of the license visit http://copyright.genie-mc.org
  or see $GENIE/LICENSE
 
@@ -20,6 +20,7 @@
 #include "Math/Integrator.h"
 
 #include "UnifiedQELPXSec.h"
+#include "fortran_functions.h"
 #include "Physics/XSectionIntegration/XSecIntegratorI.h"
 #include "Physics/QuasiElastic/XSection/QELFormFactors.h"
 #include "Physics/QuasiElastic/XSection/QELFormFactorsModelI.h"
@@ -41,14 +42,6 @@ using namespace genie;
 using namespace genie::constants;
 using namespace genie::controls;
 using namespace genie::utils;
-
-////____________________________________________________________________________
-extern"C"
-{
-  void compute_hadron_tensor_(double *,double *, double *,double *,double *,
-	double *,double *,double *,double *,double *,double *,
-	double *,double *,std::complex<double> [4][4]);
-}
 
 //____________________________________________________________________________
 UnifiedQELPXSec::UnifiedQELPXSec() :
@@ -98,15 +91,9 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   TLorentzVector p4Nf = kinematics.HadSystP4();
   double E_Nf = p4Nf.E();
   
-  // in the dOmegadE' phase space, but QELEvgen phase space is
-  // defined for a conversion between d3k'(Lab)->dcosthetadphi (COM frame), so we have to
-  // convert dOmegadE'= d3k'/E'k'
-
-  double xsec = 1.0;
  
-  // Incoming and outgoing hadron phase space factos
-  // are included in hadron tensor
-  xsec *= fXSecScale / (E_lep * E_probe * E_NiOnShell * E_Nf) / 32. / kPi / kPi;
+  // Include phase space factors in cross section
+  double xsec = fXSecScale / (E_lep * E_probe * E_NiOnShell * E_Nf) / 32. / kPi / kPi;
 
   // If we're dealing with a nuclear target, then apply Pauli blocking as
   // needed  
@@ -207,17 +194,17 @@ double UnifiedQELPXSec::XSec(const Interaction* interaction,
   // Get energy and momentum transfer values
   double w = qP4.E();
   double wt = qTildeP4.E(); 
-  double xk_x, xk_y, xk_z, q_x, q_y, q_z;
+  double pNi_x, pNi_y, pNi_z, q_x, q_y, q_z;
   
-  xk_x = p4NiOnShell.X();
-  xk_y = p4NiOnShell.Y();
-  xk_z = p4NiOnShell.Z();
+  pNi_x = p4NiOnShell.X();
+  pNi_y = p4NiOnShell.Y();
+  pNi_z = p4NiOnShell.Z();
   q_x = qP4.X();
   q_y = qP4.Y();
   q_z = qP4.Z();
 
   // Compute hadron tensor 
-  compute_hadron_tensor_(&xmn, &w, &wt, &xk_x, &xk_y, &xk_z, &q_x, &q_y, &q_z, &f1v, &f2v, &ffa, &ffp, HadronTensor);
+  Get_hadrontensor_from_fortran(fFortranTensorModel, xmn, w, wt, pNi_x, pNi_y, pNi_z, q_x, q_y, q_z, f1v, f2v, ffa, ffp, HadronTensor);
   
   // Convert to a GENIE Rank2LorentzTensor object
   ManualResponseTensor ATilde_munu(HadronTensor);
@@ -321,6 +308,8 @@ void UnifiedQELPXSec::LoadConfig(void)
     this->SubAlg("EMFormFactorsAlg") );
   assert( fEMFormFactorsModel );
 
+  GetParamDef("FortranTensorModel", fFortranTensorModel, std::string("compute_hadron_tensor_SF"));  
+
   // Attach CC model for now. This will be updated later.
   fFormFactors.SetModel( fCCFormFactorsModel );
 
@@ -352,3 +341,4 @@ void UnifiedQELPXSec::LoadConfig(void)
   GetParamDef( "DoRotate_qAlong_z", fDoqAlongZ, false );
 
 }
+

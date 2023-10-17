@@ -15,7 +15,8 @@ EMFormFactorsAlg   alg      No         QEL-EM form factors algorithm
 XSec-Integrator    alg      No
 CabibboAngle       double   No         Cabibbo angle                    CommonParam[CKM]
 PauliBlockerAlg    alg      No         PauliBlocking algorithm
-DoConserveVectorC  int      Yes        conserves vector current
+FortranTensorModel string   No         Specifies which fortran model to use
+DoRotate_qAlong_z  bool     Yes        Rotates system so q is along z
 QEL-CC-XSecScale   double   Yes        Scaling factor                   GPL value
 
 
@@ -38,6 +39,8 @@ IntegralNucleonBindingMode           alg      No
     <param type="alg"  name="XSec-Integrator"> genie::NewQELXSec/Default </param>
     <param type="alg"  name="IntegralNuclearModel"> genie::SpectralFunc/Default </param>
     <param type="string" name="IntegralNucleonBindingMode"> UseNuclearModel </param>
+
+    <param type="string" name="FortranTensorModel"> compute_hadron_tensor_SF </param> 
 
     <param type="alg"  name="PauliBlockerAlg"> genie::PauliBlocker/Default </param>
     <param type="bool" name="DoPauliBlocking"> true </param>

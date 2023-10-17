@@ -8,7 +8,7 @@
 ! This function expects that q is along Z!!!
   subroutine compute_hadron_tensor(xmn_in, w, wt, xk_x, xk_y, xk_z, &
         &       q_x, q_y, q_z, ff1v, ff2v, ffa, ffp, resp) &
-        &       bind(C,name="compute_hadron_tensor_SF")
+        &       bind(C,name="compute_hadron_tensor_SF_CC")
     use onebody_hadron_tensor_sf
     use onebody_currents_sf
     implicit none
@@ -18,11 +18,11 @@
     real*8 :: xk_x,xk_y,xk_z
     real*8 :: p_4(4),pp_4(4),qt_4(4)
     real*8 :: ff1v, ff2v, ffa, ffp
-    logical :: conserve_current
     complex*16 :: resp(4,4)
+    logical :: conserve_current
 
-      conserve_current = .FALSE.
-      
+      conserve_current = .TRUE.
+
       !Set up all dirac matrices
       call dirac_matrices_in(xmn_in, conserve_current)
 
@@ -51,11 +51,11 @@
 
       call current_init(p_4,pp_4,qt_4,w)
       call define_spinors()
-      call sigccc(resp,ff1v,ff2v,ffa,ffp)
+      call sigccc2(resp,ff1v,ff2v,ffa,ffp)
       return
     end subroutine compute_hadron_tensor
     
-    subroutine sigccc(resp,ff1v,ff2v,ffa,ffp)
+    subroutine sigccc(resp,ff1v,ff2v,ffa,ffp) bind(C,name="sigccc2")
       use onebody_currents_sf
       implicit none
       real*8 :: ff1v,ff2v,ffa,ffp
@@ -69,7 +69,7 @@
       !...Spin average gives a factor of 1/2 to the nuclear response tensor 
       resp = resp*0.5d0
       
-      call shift(resp)
+      call shift2(resp)
 
       inter = TRANSPOSE(resp)
       resp = inter
@@ -79,7 +79,7 @@
 
     !This module shifts the response tensor so that it is in (x,y,z,t), used by
     !TLorentzVector and GENIE convention instead of (t,x,y,z)
-    subroutine shift(resp)
+    subroutine shift(resp) bind(C,name="shift2")
       use onebody_currents_sf
       implicit none
       complex*16 :: resp(4,4)
